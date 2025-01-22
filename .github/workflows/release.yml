@@ -1,4 +1,4 @@
-name: Build and Release
+name: Release
 on:
   push:
     branches:
@@ -6,54 +6,71 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        configuration: [Release]
-        platform: [AnyCPU, x86]
-
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x'
-
-    - name: Restore dependencies
-      run: dotnet restore
-
-    - name: Build
-      run: msbuild UAssetAPI.sln /p:Configuration=Release
-
-    - name: Package
-      run: |
-        $artifacts = ".\artifacts"
-        New-Item -ItemType Directory -Force -Path $artifacts
-        Copy-Item "bin\${{ matrix.configuration }}\net8.0\*" -Destination $artifacts -Recurse
-        Compress-Archive -Path "$artifacts\*" -DestinationPath ".\UAssetAPI-${{ matrix.platform }}.zip"
-
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: UAssetAPI-${{ matrix.platform }}
-        path: UAssetAPI-${{ matrix.platform }}.zip
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-    - name: Download all artifacts
-      uses: actions/download-artifact@v4
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: |
-          UAssetAPI-AnyCPU/*.zip
-          UAssetAPI-x86/*.zip
-        generate_release_notes: true
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          
+      - name: .NET Setup
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '8.0.x'
+          
+      - name: Fetch submodules
+        run: git submodule update --init --recursive
+        
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1
+        
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.0.2
+        
+      - name: Navigate to workspace
+        run: cd $GITHUB_WORKSPACE
+        
+      - name: Restore packages
+        run: nuget restore UAssetAPI.sln
+        
+      - name: Build
+        run: msbuild UAssetAPI.sln /p:Configuration=Release
+        
+      - name: Package Files
+        run: |
+          $artifacts = ".\artifacts"
+          New-Item -ItemType Directory -Force -Path $artifacts
+          Copy-Item ".\UAssetAPI\bin\Release\net8.0\*" -Destination $artifacts -Recurse
+          Compress-Archive -Path "$artifacts\*" -DestinationPath ".\UAssetAPI.zip"
+        
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          draft: false
+          prerelease: false
+          
+      - name: Upload Release Asset (ZIP)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./UAssetAPI.zip
+          asset_name: UAssetAPI.zip
+          asset_content_type: application/zip
+          
+      - name: Upload Release Asset (DLL)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./UAssetAPI/bin/Release/net8.0/UAssetAPI.dll
+          asset_name: UAssetAPI.dll
+          asset_content_type: application/octet-stream
