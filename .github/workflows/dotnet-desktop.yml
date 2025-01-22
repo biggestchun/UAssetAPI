@@ -56,7 +56,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./UAssetAPI/bin/Release/net8.0-windows/UAssetAPI.dll
+         # asset_path: ./UAssetAPI/bin/Release/net8.0-windows/UAssetAPI.dll
+          asset_path: D:\a\UAssetAPI\UAssetAPI\UAssetAPI\obj\Release\net8.0\ref\UAssetAPI.dll
           asset_name: UAssetAPI.exe
           asset_content_type: application/octet-stream
 
