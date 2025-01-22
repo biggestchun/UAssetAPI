@@ -1,18 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Configuration Condition ="'$(Configuration)' == ''">Debug</Configuration>
+    <Platform Condition ="'$(Platform)' == ''">AnyCPU</Platform>
+    <ProjectGuid>{D1FFA0DC-0ACC-4108-ADC1-2A71122C09AF}</ProjectGuid>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
-
   <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="UAssetAPI">
-      <HintPath>lib\UAssetAPI.dll</HintPath>
-    </Reference>
-    
-    <!-- Dependencies from original project -->
-    <PackageReference Include="ZstdSharp.Port" Version="0.8.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <HintPath>lib\UAssetAPI.dll</HintPath>
+  </ItemGroup>  
+  <ItemGroup>
+    <Compile Include="Program.cs" />
   </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
