@@ -25,15 +25,6 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
-    - name: Create lib directory and download UAssetAPI
-      run: |
-        mkdir lib
-        $latestRelease = Invoke-RestMethod -Uri "https://api.github.com/repos/YOUR_USERNAME/UAssetAPI/releases/latest"
-        $assetUrl = $latestRelease.assets | Where-Object { $_.name -eq "UAssetAPI.dll" } | Select-Object -ExpandProperty browser_download_url
-        Invoke-WebRequest -Uri $assetUrl -OutFile "lib/UAssetAPI.dll"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.1
 
