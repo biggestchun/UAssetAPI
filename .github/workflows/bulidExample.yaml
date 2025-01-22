@@ -31,9 +31,6 @@ jobs:
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.2.0
 
-    - name: Restore dependencies
-      run: nuget restore $env:Solution_Name
-
     - name: Build solution
       run: msbuild $env:Solution_Name /p:Configuration=Release
 
