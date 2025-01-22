@@ -33,7 +33,8 @@ jobs:
 
 
     - name: Restore NuGet packages
-      run: dotnet restore
+       dotnet restore ExampleProject.sln
+
 
     - name: Build the project
       run: dotnet build --configuration Release
