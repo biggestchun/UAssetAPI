@@ -12,8 +12,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="UAssetAPI">
-    <HintPath>lib\UAssetAPI.dll</HintPath>
   </ItemGroup>  
   <ItemGroup>
     <Compile Include="Program.cs" />
