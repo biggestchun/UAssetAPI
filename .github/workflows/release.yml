@@ -1,4 +1,4 @@
-name: Release
+name: CI
 on:
   push:
     branches:
@@ -43,6 +43,14 @@ jobs:
           New-Item -ItemType Directory -Force -Path $artifacts
           Copy-Item ".\UAssetAPI\bin\Release\net8.0\*" -Destination $artifacts -Recurse
           Compress-Archive -Path "$artifacts\*" -DestinationPath ".\UAssetAPI.zip"
+
+      - name: Delete existing release
+        uses: dev-drprasad/delete-tag-and-release@v1.0
+        with:
+          tag_name: v${{ github.run_number }}
+          delete_release: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
         
       - name: Create Release
         id: create_release
