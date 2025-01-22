@@ -11,7 +11,4 @@
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>  
-  <ItemGroup>
-    <Compile Include="Program.cs" />
-  </ItemGroup>
 </Project>
